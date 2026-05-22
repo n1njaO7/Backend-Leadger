@@ -9,7 +9,8 @@ const userSchema = new mongoose.Schema({
         unique : [true,"Email Already Exits"],
         trim : true,
         lowercase : true,
-        match : [/^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/]
+        match : [/^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/,
+                "please Enter a valid email"]
     },
 
     password :
@@ -24,27 +25,27 @@ const userSchema = new mongoose.Schema({
     {
         type : String,
         required : [true,"name is required"]
-    },
-
+    }},
+    {
     timestamps : true // it tell when the user is creted and updated last time
 
 })
 
 //this is created to hash the updated password
-userSchema.pre("save",async function(next){
+userSchema.pre("save",async function(){
     if(!this.isModified("password")){
-        return next();
+        return ;
     }
 
     const hash = await bcrypt.hash(this.password,10);
     this.password= hash;
 
-    return next();
+    return;
 })
 
 // this will retuen true or false based on comparion of hash stored in db 
 userSchema.methods.comparePassword =  async function (password){
-    return await bcrypt.compare(this.password,password)
+    return await bcrypt.compare(password,this.password)
 }
 
 const UserModel = mongoose.model("user",userSchema)
