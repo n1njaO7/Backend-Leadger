@@ -42,3 +42,9 @@ userSchema.pre("save",async function(next){
     return next();
 })
 
+// this will retuen true or false based on comparion of hash stored in db 
+userSchema.methods.comparePassword =  async function (password){
+    return await bcrypt.compare(this.password,password)
+}
+
+const UserModel = mongoose.model("user",userSchema)
