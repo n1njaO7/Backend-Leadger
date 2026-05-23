@@ -41,8 +41,7 @@ async function userRegisterController(req,res) {
  */
 
 async function userLoginController(req,res) {
-    const {email,password} = req.body
-
+    const {email,password} = req.body   
     const user= await UserModel.findOne({email}).select("+password")
     if(!user){
         return res.status(401).json({
