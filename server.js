@@ -1,9 +1,10 @@
-require("dotenv").config() 
+require("dotenv").config()
 
 const app = require("./src/app")
-const ConnectToDb= require("./src/config/db")
-ConnectToDb()
+const connectToDB = require("./src/config/db")
 
-app.listen(3000,()=>{
-    console.log("Server is runnng on port 3000");
+connectToDB()
+
+app.listen(3000, () => {
+    console.log("Server is running on port 3000")
 })
