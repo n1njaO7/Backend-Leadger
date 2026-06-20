@@ -1,53 +1,57 @@
 const mongoose = require("mongoose")
 const bcrypt = require("bcryptjs")
 
+
 const userSchema = new mongoose.Schema({
-    email : 
-    { 
-        type : String,
-        required:[true,"Email Required"],
-        unique : [true,"Email Already Exits"],
-        trim : true,
-        lowercase : true,
-        match : [/^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/,
-                "please Enter a valid email"]
+    email: {
+        type: String,
+        required: [ true, "Email is required for creating a user" ],
+        trim: true,
+        lowercase: true,
+        match: [ /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, "Invalid Email address" ],
+        unique: [ true, "Email already exists." ]
     },
-
-    password :
-    {
-        type : String,
-        required : [true,"Password is reuired"],
-        minlength : [6,"password should contain atleast 6 character"],
-        select : false // it is used as when user data is filtered then password does not appear 
+    name: {
+        type: String,
+        required: [ true, "Name is required for creating an account" ]
     },
- 
-    name : 
-    {
-        type : String,
-        required : [true,"name is required"]
-    }},
-    {
-    timestamps : true // it tell when the user is creted and updated last time
-
+    password: {
+        type: String,
+        required: [ true, "Password is required for creating an account" ],
+        minlength: [ 6, "password should contain more than 6 character" ],
+        select: false
+    },
+    systemUser: {
+        type: Boolean,
+        default: false,
+        immutable: true,
+        select: false
+    }
+}, {
+    timestamps: true
 })
 
-//this is created to hash the updated password
-userSchema.pre("save",async function(){
-    if(!this.isModified("password")){
-        return ;
+userSchema.pre("save", async function () {
+    if (!this.isModified("password")) {
+        return
     }
 
-    const hash = await bcrypt.hash(this.password,10);
-    this.password= hash;
+    const hash = await bcrypt.hash(this.password, 10)
+    this.password = hash
 
-    return;
+    return
+
 })
 
-// this will retuen true or false based on comparion of hash stored in db 
-userSchema.methods.comparePassword =  async function (password){
-    return await bcrypt.compare(password,this.password)
+userSchema.methods.comparePassword = async function (password) {
+
+    console.log(password, this.password)
+
+    return await bcrypt.compare(password, this.password)
+
 }
 
-const UserModel = mongoose.model("user",userSchema)
 
-module.exports = UserModel 
+const userModel = mongoose.model("user", userSchema)
+
+module.exports = userModel
